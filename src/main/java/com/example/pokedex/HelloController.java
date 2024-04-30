@@ -23,15 +23,15 @@ public class HelloController {
     {
         try {
             // Connect to the SQLite database
-            Connection conn = DriverManager.getConnection("jdbc:sqlite:/C:\\CSE\\2-2\\CSE 4402\\Lab 04\\PokeDex\\src\\main\\resources\\com\\example\\pokedex\\database.db");
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:/D:\\CSE\\2-2\\CSE 4402\\PokeDex\\src\\main\\resources\\com\\example\\pokedex\\database.db");
 
             // Execute a SELECT query to retrieve the blob data
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT Image FROM Pokemons WHERE P_ID = 13");
+            ResultSet rs = stmt.executeQuery("SELECT Image FROM Pokemons WHERE P_ID = 9");
 
             // Check if result set is not empty
             if (rs.next()) {
-                byte[] imageData = rs.getBytes("image");
+                byte[] imageData = rs.getBytes("Image");
                 try {
                     Image image = new Image(new ByteArrayInputStream(imageData));
                     img.setImage(image);
