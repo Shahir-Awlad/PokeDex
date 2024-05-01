@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.ByteArrayInputStream;
@@ -20,40 +21,72 @@ import java.util.Objects;
 
 public class ImageButtonsFromDatabase extends Application {
 
+    Stage secondaryStage = new Stage();
+
     @Override
     public void start(Stage primaryStage) {
         // Connect to the SQLite database
         List<Image> images = new ArrayList<>();
         List<String> types = new ArrayList<>();
+        List<String> types2 = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        List<String> id = new ArrayList<>();
+        List<String> desc = new ArrayList<>();
+        List<String> heights = new ArrayList<>();
+        List<String> weights = new ArrayList<>();
+
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:/D:\\CSE\\2-2\\CSE 4402\\PokeDex\\src\\main\\resources\\com\\example\\pokedex\\database.db")) {
             Statement stmt = conn.createStatement();
-            //Statement stmt2 = conn.createStatement();
-
             ResultSet rs = stmt.executeQuery("SELECT Image FROM Pokemons");
-            //ResultSet rs2 = stmt2.executeQuery("Select Type_1 FROM Pokemons");
             while (rs.next()) {
-                // Retrieve blob data as bytes
                 byte[] imageData = rs.getBytes("Image");
-                // Convert byte array to Image
                 Image image = new Image(new ByteArrayInputStream(imageData));
                 images.add(image);
 
-                //String temp = rs2.getString("Type_1");
-                //types.add(temp);
-
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
-        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:/D:\\CSE\\2-2\\CSE 4402\\PokeDex\\src\\main\\resources\\com\\example\\pokedex\\database.db")) {
-            Statement stmt = conn.createStatement();
-
-            ResultSet rs = stmt.executeQuery("Select Type_1 FROM Pokemons");
+            rs = stmt.executeQuery("Select Type_1 FROM Pokemons");
             while (rs.next()) {
                 String temp = rs.getString("Type_1");
                 types.add(temp);
             }
+
+            rs = stmt.executeQuery("Select Type_2 FROM Pokemons");
+            while (rs.next()) {
+                String temp = rs.getString("Type_2");
+                types2.add(temp);
+            }
+
+            rs = stmt.executeQuery("Select Name FROM Pokemons");
+            while (rs.next()) {
+                String temp = rs.getString("Name");
+                names.add(temp);
+            }
+
+            rs = stmt.executeQuery("Select P_ID FROM Pokemons");
+            while (rs.next()) {
+                String temp = rs.getString("P_ID");
+                id.add(temp);
+            }
+
+            rs = stmt.executeQuery("Select Description FROM Pokemons");
+            while (rs.next()) {
+                String temp = rs.getString("Description");
+                desc.add(temp);
+            }
+
+            rs = stmt.executeQuery("SELECT Height FROM Pokemons");
+            while (rs.next()) {
+                String temp = rs.getString("Height");
+                heights.add(temp);
+            }
+
+            rs = stmt.executeQuery("SELECT Weight FROM Pokemons");
+            while (rs.next()) {
+                String temp = rs.getString("Weight");
+                weights.add(temp);
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -65,24 +98,61 @@ public class ImageButtonsFromDatabase extends Application {
         HBox currentRow = new HBox(10); // 10 is the horizontal spacing between children
         int count = 0; // Counter for buttons in current row
         for (Image image : images) {
+
             ImageView imageView = new ImageView(image);
             imageView.setFitWidth(80); // Set the width of the ImageView
             imageView.setFitHeight(80); // Set the height of the ImageView
 
-            Label label = new Label();
-            label.setStyle("-fx-background-color: white; -fx-padding: 5px;");
+            Label labelT1 = new Label(types.get(count));
+            labelT1.setStyle("-fx-background-color: rgba(255, 255, 255, 0.5); -fx-padding: 5px; -fx-background-radius: 30; -fx-text-fill: white; -fx-font-weight: bold;");
+            labelT1.setMaxWidth(60);
+            labelT1.setAlignment(Pos.CENTER);
+
+            Label labelT2 = new Label(types2.get(count));
+            if(types2.get(count) != null)
+                labelT2.setStyle("-fx-background-color: rgba(255, 255, 255, 0.5); -fx-padding: 5px; -fx-background-radius: 30; -fx-text-fill: white; -fx-font-weight: bold;");
+            labelT2.setMaxWidth(60);
+            labelT2.setAlignment(Pos.CENTER);
+
+            Label nameLabel = new Label(names.get(count));
+            nameLabel.setStyle("-fx-background-color: rgba(255, 255, 255, 0.0); -fx-padding: 5px; -fx-background-radius: 30; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13pt;");
+            nameLabel.setAlignment(Pos.CENTER);
+
+            Label idLabel = new Label("#" + id.get(count));
+            idLabel.setStyle("-fx-background-color: rgba(255, 255, 255, 0.0); -fx-padding: 5px; -fx-background-radius: 30; -fx-text-fill: #303236; -fx-font-weight: bold; -fx-font-size: 11pt;");
+            idLabel.setAlignment(Pos.CENTER);
 
             StackPane stackPane = new StackPane();
-            stackPane.getChildren().addAll(imageView, label);
-            StackPane.setAlignment(imageView, Pos.BOTTOM_RIGHT); // Align image to the bottom left
-
-
-            StackPane.setAlignment(label, Pos.BOTTOM_LEFT);
+            stackPane.getChildren().addAll(imageView, labelT1, labelT2, nameLabel, idLabel);
+            StackPane.setAlignment(imageView, Pos.BOTTOM_RIGHT);
+            StackPane.setAlignment(labelT1, Pos.CENTER_LEFT);
+            StackPane.setAlignment(labelT2, Pos.BOTTOM_LEFT);
+            StackPane.setAlignment(nameLabel, Pos.TOP_LEFT);
+            StackPane.setAlignment(idLabel, Pos.TOP_RIGHT);
 
             Button button = new Button();
             button.setPrefHeight(130);
             button.setPrefWidth(200);
             button.setGraphic(stackPane);
+
+            int finalCount = count;
+            button.setOnAction(event -> {
+                String pokemonType = types.get(finalCount);
+                String pokemonName = names.get(finalCount);
+                String pokemonId = id.get(finalCount);
+                String pokemonDesc = desc.get(finalCount);
+                Image pokemonImage = images.get(finalCount);
+                String pokemonHeight = heights.get(finalCount);
+                String pokemonWeight = weights.get(finalCount);
+
+                // Generate the details scene for the selected Pokémon
+                Scene detailsScene = createDetailsScene(pokemonName, pokemonType, pokemonId, pokemonDesc, pokemonImage, pokemonHeight, pokemonWeight);
+
+                // Set the newly generated scene as the scene for the primary stage
+                secondaryStage.setScene(detailsScene);
+                secondaryStage.setTitle("Details");
+                secondaryStage.show();
+            });
 
             if(Objects.equals(types.get(count), "Grass"))
                 button.setStyle("-fx-background-color: #50d4b4; -fx-background-radius: 15;");
@@ -120,18 +190,11 @@ public class ImageButtonsFromDatabase extends Application {
                 button.setStyle("-fx-background-color: #c0bccc; -fx-background-radius: 15;");
             count++;
 
+            currentRow.getChildren().add(button);
 
-            // Set the style of the button to make it rounded
-
-
-
-            currentRow.getChildren().add(button); // Add the button to the current row
-
-
-            // If the current row is full or we reached the end of images, add the row to the scene
             if (count % 5 == 0 || images.indexOf(image) == images.size() - 1) {
-                root.getChildren().add(currentRow); // Add the row to the root
-                currentRow = new HBox(10); // Start a new row
+                root.getChildren().add(currentRow);
+                currentRow = new HBox(10);
             }
         }
 
@@ -140,6 +203,35 @@ public class ImageButtonsFromDatabase extends Application {
         primaryStage.setScene(new Scene(root)); // Set initial scene size
         primaryStage.show();
     }
+
+    private Scene createDetailsScene(String name, String type1, String id, String desc, Image image, String height, String weight) {
+        VBox layout = new VBox(10);
+        layout.setAlignment(Pos.CENTER_LEFT);
+        layout.setStyle("-fx-padding: 0 0 0 20");
+
+        Label nameLabel = new Label("Name: " + name);
+        Label typeLabel = new Label("Type: " + type1);
+        Label idLabel = new Label("ID: " + id);
+        Label heightLabel = new Label("Height: " + height);
+        Label weightLabel = new Label("Weight: " + weight);
+        Text descText = new Text("Description: " + desc);
+        descText.setWrappingWidth(380);
+
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(200);
+        imageView.setFitHeight(200);
+
+        Button favButton = new Button("Favourite");
+
+        favButton.setOnAction(event ->{
+
+        });
+
+        layout.getChildren().addAll(nameLabel, typeLabel, idLabel, heightLabel, weightLabel, descText);
+        return new Scene(layout, 400, 350);
+    }
+
+
 
     public static void main(String[] args) {
         launch(args);
