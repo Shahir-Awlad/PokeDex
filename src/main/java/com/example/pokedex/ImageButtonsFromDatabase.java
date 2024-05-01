@@ -34,6 +34,7 @@ public class ImageButtonsFromDatabase extends Application {
         List<String> desc = new ArrayList<>();
         List<String> heights = new ArrayList<>();
         List<String> weights = new ArrayList<>();
+        List<Integer> favourites = new ArrayList<>();
 
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:/D:\\CSE\\2-2\\CSE 4402\\PokeDex\\src\\main\\resources\\com\\example\\pokedex\\database.db")) {
             Statement stmt = conn.createStatement();
@@ -85,6 +86,12 @@ public class ImageButtonsFromDatabase extends Application {
             while (rs.next()) {
                 String temp = rs.getString("Weight");
                 weights.add(temp);
+            }
+
+            rs = stmt.executeQuery("SELECT isFavourite FROM Pokemons");
+            while (rs.next()) {
+                String temp = rs.getString("isFavourite");
+                favourites.add(Integer.valueOf(temp));
             }
 
         } catch (SQLException e) {
@@ -144,9 +151,10 @@ public class ImageButtonsFromDatabase extends Application {
                 Image pokemonImage = images.get(finalCount);
                 String pokemonHeight = heights.get(finalCount);
                 String pokemonWeight = weights.get(finalCount);
+                Integer pokemonFavs = favourites.get(finalCount);
 
                 // Generate the details scene for the selected Pokémon
-                Scene detailsScene = createDetailsScene(pokemonName, pokemonType, pokemonId, pokemonDesc, pokemonImage, pokemonHeight, pokemonWeight);
+                Scene detailsScene = createDetailsScene(pokemonName, pokemonType, pokemonId, pokemonDesc, pokemonImage, pokemonHeight, pokemonWeight, pokemonFavs);
 
                 // Set the newly generated scene as the scene for the primary stage
                 secondaryStage.setScene(detailsScene);
@@ -204,7 +212,7 @@ public class ImageButtonsFromDatabase extends Application {
         primaryStage.show();
     }
 
-    private Scene createDetailsScene(String name, String type1, String id, String desc, Image image, String height, String weight) {
+    private Scene createDetailsScene(String name, String type1, String id, String desc, Image image, String height, String weight, Integer fav) {
         VBox layout = new VBox(10);
         layout.setAlignment(Pos.CENTER_LEFT);
         layout.setStyle("-fx-padding: 0 0 0 20");
@@ -224,10 +232,18 @@ public class ImageButtonsFromDatabase extends Application {
         Button favButton = new Button("Favourite");
 
         favButton.setOnAction(event ->{
+            try (Connection conn = DriverManager.getConnection("jdbc:sqlite:/D:\\CSE\\2-2\\CSE 4402\\PokeDex\\src\\main\\resources\\com\\example\\pokedex\\database.db")) {
+                PreparedStatement pstmt = conn.prepareStatement("UPDATE Pokemons SET isFavourite = 1 WHERE Name = ?");
+                pstmt.executeUpdate();
 
+                pstmt.setString(1, name);
+                System.out.println(name + fav);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         });
 
-        layout.getChildren().addAll(nameLabel, typeLabel, idLabel, heightLabel, weightLabel, descText);
+        layout.getChildren().addAll(nameLabel, typeLabel, idLabel, heightLabel, weightLabel, descText, favButton);
         return new Scene(layout, 400, 350);
     }
 
