@@ -213,9 +213,45 @@ public class ImageButtonsFromDatabase extends Application {
     }
 
     private Scene createDetailsScene(String name, String type1, String id, String desc, Image image, String height, String weight, Integer fav) {
+        VBox container = new VBox(30);
+        HBox overall = new HBox(20);
         VBox layout = new VBox(10);
         layout.setAlignment(Pos.CENTER_LEFT);
-        layout.setStyle("-fx-padding: 0 0 0 20");
+        container.setAlignment(Pos.CENTER);
+        if(Objects.equals(type1, "Grass"))
+            container.setStyle("-fx-background-color: #50d4b4; -fx-padding: 0 0 0 20;");
+        if(Objects.equals(type1, "Fire"))
+            container.setStyle("-fx-background-color: #ff6c6c; -fx-padding: 0 0 0 20;");
+        if(Objects.equals(type1, "Water"))
+            container.setStyle("-fx-background-color: #78bcfc; -fx-padding: 0 0 0 20;");
+        if(Objects.equals(type1, "Ground"))
+            container.setStyle("-fx-background-color: #e0bc74; -fx-padding: 0 0 0 20;");
+        if(Objects.equals(type1, "Normal"))
+            container.setStyle("-fx-background-color: #b0a47c; -fx-padding: 0 0 0 20;");
+        if(Objects.equals(type1, "Fighting"))
+            container.setStyle("-fx-background-color: #b83c34; -fx-padding: 0 0 0 20;");
+        if(Objects.equals(type1, "Flying"))
+            container.setStyle("-fx-background-color: #a894cc; -fx-padding: 0 0 0 20;");
+        if(Objects.equals(type1, "Poison"))
+            container.setStyle("-fx-background-color: #984c94; -fx-padding: 0 0 0 20;");
+        if(Objects.equals(type1, "Electric"))
+            container.setStyle("-fx-background-color: #f8d454; -fx-padding: 0 0 0 20;");
+        if(Objects.equals(type1, "Psychic"))
+            container.setStyle("-fx-background-color: #e8648c; -fx-padding: 0 0 0 20;");
+        if(Objects.equals(type1, "Rock"))
+            container.setStyle("-fx-background-color: #b8a44c; -fx-padding: 0 0 0 20;");
+        if(Objects.equals(type1, "Ice"))
+            container.setStyle("-fx-background-color: #a8d4dc; -fx-padding: 0 0 0 20;");
+        if(Objects.equals(type1, "Bug"))
+            container.setStyle("-fx-background-color: #b0b444; -fx-padding: 0 0 0 20;");
+        if(Objects.equals(type1, "Dragon"))
+            container.setStyle("-fx-background-color: #544ca0; -fx-padding: 0 0 0 20;");
+        if(Objects.equals(type1, "Ghost"))
+            container.setStyle("-fx-background-color: #705c94; -fx-padding: 0 0 0 20;");
+        if(Objects.equals(type1, "Dark"))
+            container.setStyle("-fx-background-color: #705c4c; -fx-padding: 0 0 0 20;");
+        if(Objects.equals(type1, "Steel"))
+            container.setStyle("-fx-background-color: #c0bccc; -fx-padding: 0 0 0 20;");
 
         Label nameLabel = new Label("Name: " + name);
         Label typeLabel = new Label("Type: " + type1);
@@ -234,17 +270,17 @@ public class ImageButtonsFromDatabase extends Application {
         favButton.setOnAction(event ->{
             try (Connection conn = DriverManager.getConnection("jdbc:sqlite:/D:\\CSE\\2-2\\CSE 4402\\PokeDex\\src\\main\\resources\\com\\example\\pokedex\\database.db")) {
                 PreparedStatement pstmt = conn.prepareStatement("UPDATE Pokemons SET isFavourite = 1 WHERE Name = ?");
-                pstmt.executeUpdate();
-
                 pstmt.setString(1, name);
-                System.out.println(name + fav);
+                pstmt.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         });
 
-        layout.getChildren().addAll(nameLabel, typeLabel, idLabel, heightLabel, weightLabel, descText, favButton);
-        return new Scene(layout, 400, 350);
+        layout.getChildren().addAll(nameLabel, typeLabel, idLabel, heightLabel, weightLabel, descText);
+        overall.getChildren().addAll(layout, imageView);
+        container.getChildren().addAll(overall, favButton);
+        return new Scene(container);
     }
 
 
