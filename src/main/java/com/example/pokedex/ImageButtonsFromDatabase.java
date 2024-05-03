@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -22,6 +23,8 @@ import java.util.Objects;
 public class ImageButtonsFromDatabase extends Application {
 
     Stage secondaryStage = new Stage();
+    Stage nameSearchStage = new Stage();
+    Stage typeSearchStage = new Stage();
 
     @Override
     public void start(Stage primaryStage) {
@@ -36,7 +39,7 @@ public class ImageButtonsFromDatabase extends Application {
         List<String> weights = new ArrayList<>();
         List<Integer> favourites = new ArrayList<>();
 
-        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:/D:\\CSE\\2-2\\CSE 4402\\PokeDex\\src\\main\\resources\\com\\example\\pokedex\\database.db")) {
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:/C:\\CSE\\2-2\\CSE 4402\\PokeDex\\src\\main\\resources\\com\\example\\pokedex\\database.db")) {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT Image FROM Pokemons");
             while (rs.next()) {
@@ -100,9 +103,142 @@ public class ImageButtonsFromDatabase extends Application {
 
         // Create a root VBox
         VBox root = new VBox(10); // 10 is the vertical spacing between children
+        root.setStyle("-fx-padding: 0 10 0 10");
 
         // Create buttons with images
         HBox currentRow = new HBox(10); // 10 is the horizontal spacing between children
+
+        HBox buttonsContainer = new HBox(30);
+        buttonsContainer.setAlignment(Pos.CENTER);
+        Button searchName = new Button("Search by Name");
+        Button searchType = new Button("Search by Type");
+        buttonsContainer.getChildren().addAll(searchName, searchType);
+        buttonsContainer.setStyle("-fx-padding: 40 0 20 0 ;");
+
+        searchName.setOnAction(event -> {
+            TextField searchField = new TextField();
+            searchField.setPromptText("Search Pokemon");
+
+            Button searchButton = new Button("Search");
+
+            VBox nameSearchContainer = new VBox(20);
+            nameSearchContainer.getChildren().addAll(searchField, searchButton);
+            nameSearchContainer.setStyle("-fx-padding: 50");
+            nameSearchContainer.setAlignment(Pos.CENTER);
+
+            Scene nameSearch = new Scene(nameSearchContainer);
+            nameSearchStage.setScene(nameSearch);
+            nameSearchStage.setTitle("Search By Name");
+            nameSearchStage.show();
+
+            searchButton.setOnAction(event2 -> {
+                String searchTerm = searchField.getText();
+
+                for(int i=0; i<names.size(); i++) {
+                    if(Objects.equals(names.get(i), searchTerm))
+                    {
+                        ImageView imageView = new ImageView(images.get(i));
+                        imageView.setFitWidth(80); // Set the width of the ImageView
+                        imageView.setFitHeight(80); // Set the height of the ImageView
+
+                        Label labelT1 = new Label(types.get(i));
+                        labelT1.setStyle("-fx-background-color: rgba(255, 255, 255, 0.5); -fx-padding: 5px; -fx-background-radius: 30; -fx-text-fill: white; -fx-font-weight: bold;");
+                        labelT1.setMaxWidth(60);
+                        labelT1.setAlignment(Pos.CENTER);
+
+                        Label labelT2 = new Label(types2.get(i));
+                        if(types2.get(i) != null)
+                            labelT2.setStyle("-fx-background-color: rgba(255, 255, 255, 0.5); -fx-padding: 5px; -fx-background-radius: 30; -fx-text-fill: white; -fx-font-weight: bold;");
+                        labelT2.setMaxWidth(60);
+                        labelT2.setAlignment(Pos.CENTER);
+
+                        Label nameLabel = new Label(names.get(i));
+                        nameLabel.setStyle("-fx-background-color: rgba(255, 255, 255, 0.0); -fx-padding: 5px; -fx-background-radius: 30; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13pt;");
+                        nameLabel.setAlignment(Pos.CENTER);
+
+                        Label idLabel = new Label("#" + id.get(i));
+                        idLabel.setStyle("-fx-background-color: rgba(255, 255, 255, 0.0); -fx-padding: 5px; -fx-background-radius: 30; -fx-text-fill: #303236; -fx-font-weight: bold; -fx-font-size: 11pt;");
+                        idLabel.setAlignment(Pos.CENTER);
+
+                        StackPane stackPane = new StackPane();
+                        stackPane.getChildren().addAll(imageView, labelT1, labelT2, nameLabel, idLabel);
+                        StackPane.setAlignment(imageView, Pos.BOTTOM_RIGHT);
+                        StackPane.setAlignment(labelT1, Pos.CENTER_LEFT);
+                        StackPane.setAlignment(labelT2, Pos.BOTTOM_LEFT);
+                        StackPane.setAlignment(nameLabel, Pos.TOP_LEFT);
+                        StackPane.setAlignment(idLabel, Pos.TOP_RIGHT);
+
+                        Button button = new Button();
+                        button.setPrefHeight(130);
+                        button.setPrefWidth(200);
+                        button.setGraphic(stackPane);
+                        button.setStyle("-fx-padding: 200");
+
+                        int finalI = i;
+                        button.setOnAction(event3 -> {
+                            String pokemonType = types.get(finalI);
+                            String pokemonName = names.get(finalI);
+                            String pokemonId = id.get(finalI);
+                            String pokemonDesc = desc.get(finalI);
+                            Image pokemonImage = images.get(finalI);
+                            String pokemonHeight = heights.get(finalI);
+                            String pokemonWeight = weights.get(finalI);
+                            Integer pokemonFavs = favourites.get(finalI);
+
+                            // Generate the details scene for the selected Pokémon
+                            Scene detailsScene = createDetailsScene(pokemonName, pokemonType, pokemonId, pokemonDesc, pokemonImage, pokemonHeight, pokemonWeight, pokemonFavs);
+
+                            secondaryStage.setScene(detailsScene);
+                            secondaryStage.setTitle("Details");
+                            secondaryStage.show();
+
+                        });
+
+                        if(Objects.equals(types.get(i), "Grass"))
+                            button.setStyle("-fx-background-color: #50d4b4; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Fire"))
+                            button.setStyle("-fx-background-color: #ff6c6c; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Water"))
+                            button.setStyle("-fx-background-color: #78bcfc; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Ground"))
+                            button.setStyle("-fx-background-color: #e0bc74; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Normal"))
+                            button.setStyle("-fx-background-color: #b0a47c; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Fighting"))
+                            button.setStyle("-fx-background-color: #b83c34; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Flying"))
+                            button.setStyle("-fx-background-color: #a894cc; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Poison"))
+                            button.setStyle("-fx-background-color: #984c94; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Electric"))
+                            button.setStyle("-fx-background-color: #f8d454; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Psychic"))
+                            button.setStyle("-fx-background-color: #e8648c; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Rock"))
+                            button.setStyle("-fx-background-color: #b8a44c; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Ice"))
+                            button.setStyle("-fx-background-color: #a8d4dc; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Bug"))
+                            button.setStyle("-fx-background-color: #b0b444; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Dragon"))
+                            button.setStyle("-fx-background-color: #544ca0; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Ghost"))
+                            button.setStyle("-fx-background-color: #705c94; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Dark"))
+                            button.setStyle("-fx-background-color: #705c4c; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Steel"))
+                            button.setStyle("-fx-background-color: #c0bccc; -fx-background-radius: 15;");
+
+                        Scene nameSearched = new Scene(button);
+                        nameSearchStage.setScene(nameSearched);
+                        nameSearchStage.setTitle("Search By Name");
+                        nameSearchStage.show();
+
+                    }
+                }
+            });
+        });
+
         int count = 0; // Counter for buttons in current row
         for (Image image : images) {
 
@@ -206,6 +342,8 @@ public class ImageButtonsFromDatabase extends Application {
             }
         }
 
+        root.getChildren().add(buttonsContainer);
+
         // Set up the JavaFX Scene
         primaryStage.setTitle("Image Buttons from Database");
         primaryStage.setScene(new Scene(root)); // Set initial scene size
@@ -268,7 +406,7 @@ public class ImageButtonsFromDatabase extends Application {
         Button favButton = new Button("Favourite");
 
         favButton.setOnAction(event ->{
-            try (Connection conn = DriverManager.getConnection("jdbc:sqlite:/D:\\CSE\\2-2\\CSE 4402\\PokeDex\\src\\main\\resources\\com\\example\\pokedex\\database.db")) {
+            try (Connection conn = DriverManager.getConnection("jdbc:sqlite:/C:\\CSE\\2-2\\CSE 4402\\PokeDex\\src\\main\\resources\\com\\example\\pokedex\\database.db")) {
                 PreparedStatement pstmt = conn.prepareStatement("UPDATE Pokemons SET isFavourite = 1 WHERE Name = ?");
                 pstmt.setString(1, name);
                 pstmt.executeUpdate();
