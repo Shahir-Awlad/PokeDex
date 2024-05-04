@@ -39,7 +39,7 @@ public class ImageButtonsFromDatabase extends Application {
         List<String> weights = new ArrayList<>();
         List<Integer> favourites = new ArrayList<>();
 
-        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:/C:\\CSE\\2-2\\CSE 4402\\PokeDex\\src\\main\\resources\\com\\example\\pokedex\\database.db")) {
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:/D:\\CSE\\2-2\\CSE 4402\\PokeDex\\src\\main\\resources\\com\\example\\pokedex\\database.db")) {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT Image FROM Pokemons");
             while (rs.next()) {
@@ -116,17 +116,19 @@ public class ImageButtonsFromDatabase extends Application {
         buttonsContainer.setStyle("-fx-padding: 40 0 20 0 ;");
 
         searchName.setOnAction(event -> {
+            HBox textContainer = new HBox(1);
             TextField searchField = new TextField();
             searchField.setPromptText("Search Pokemon");
 
             Button searchButton = new Button("Search");
 
+            textContainer.getChildren().addAll(searchField, searchButton);
             VBox nameSearchContainer = new VBox(20);
-            nameSearchContainer.getChildren().addAll(searchField, searchButton);
+            //nameSearchContainer.getChildren().addAll(searchField, searchButton);
             nameSearchContainer.setStyle("-fx-padding: 50");
             nameSearchContainer.setAlignment(Pos.CENTER);
 
-            Scene nameSearch = new Scene(nameSearchContainer);
+            Scene nameSearch = new Scene(textContainer);
             nameSearchStage.setScene(nameSearch);
             nameSearchStage.setTitle("Search By Name");
             nameSearchStage.show();
@@ -229,11 +231,12 @@ public class ImageButtonsFromDatabase extends Application {
                         if(Objects.equals(types.get(i), "Steel"))
                             button.setStyle("-fx-background-color: #c0bccc; -fx-background-radius: 15;");
 
-                        Scene nameSearched = new Scene(button);
+                        nameSearchContainer.getChildren().addAll(textContainer, button);
+                        Scene nameSearched = new Scene(nameSearchContainer);
                         nameSearchStage.setScene(nameSearched);
                         nameSearchStage.setTitle("Search By Name");
                         nameSearchStage.show();
-
+                        break;
                     }
                 }
             });
@@ -406,7 +409,7 @@ public class ImageButtonsFromDatabase extends Application {
         Button favButton = new Button("Favourite");
 
         favButton.setOnAction(event ->{
-            try (Connection conn = DriverManager.getConnection("jdbc:sqlite:/C:\\CSE\\2-2\\CSE 4402\\PokeDex\\src\\main\\resources\\com\\example\\pokedex\\database.db")) {
+            try (Connection conn = DriverManager.getConnection("jdbc:sqlite:/D:\\CSE\\2-2\\CSE 4402\\PokeDex\\src\\main\\resources\\com\\example\\pokedex\\database.db")) {
                 PreparedStatement pstmt = conn.prepareStatement("UPDATE Pokemons SET isFavourite = 1 WHERE Name = ?");
                 pstmt.setString(1, name);
                 pstmt.executeUpdate();
