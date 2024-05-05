@@ -117,6 +117,7 @@ public class ImageButtonsFromDatabase extends Application {
 
         searchName.setOnAction(event -> {
             HBox textContainer = new HBox(1);
+            textContainer.setAlignment(Pos.CENTER);
             TextField searchField = new TextField();
             searchField.setPromptText("Search Pokemon");
 
@@ -128,7 +129,7 @@ public class ImageButtonsFromDatabase extends Application {
             nameSearchContainer.setStyle("-fx-padding: 50");
             nameSearchContainer.setAlignment(Pos.CENTER);
 
-            Scene nameSearch = new Scene(textContainer);
+            Scene nameSearch = new Scene(textContainer, 400, 350);
             nameSearchStage.setScene(nameSearch);
             nameSearchStage.setTitle("Search By Name");
             nameSearchStage.show();
@@ -174,7 +175,7 @@ public class ImageButtonsFromDatabase extends Application {
                         button.setPrefHeight(130);
                         button.setPrefWidth(200);
                         button.setGraphic(stackPane);
-                        button.setStyle("-fx-padding: 200");
+                        button.setStyle("-fx-padding: 50");
 
                         int finalI = i;
                         button.setOnAction(event3 -> {
@@ -232,11 +233,148 @@ public class ImageButtonsFromDatabase extends Application {
                             button.setStyle("-fx-background-color: #c0bccc; -fx-background-radius: 15;");
 
                         nameSearchContainer.getChildren().addAll(textContainer, button);
-                        Scene nameSearched = new Scene(nameSearchContainer);
+
+                        Scene nameSearched = new Scene(nameSearchContainer, 400, 350);
                         nameSearchStage.setScene(nameSearched);
                         nameSearchStage.setTitle("Search By Name");
                         nameSearchStage.show();
                         break;
+                    }
+                }
+            });
+        });
+
+        searchType.setOnAction(event -> {
+            HBox textContainer = new HBox(1);
+            textContainer.setAlignment(Pos.CENTER);
+            TextField searchField = new TextField();
+            searchField.setPromptText("Search Pokemon");
+
+            Button searchButton = new Button("Search");
+
+            textContainer.getChildren().addAll(searchField, searchButton);
+            VBox nameSearchContainer = new VBox(20);
+            //nameSearchContainer.getChildren().addAll(searchField, searchButton);
+            nameSearchContainer.setStyle("-fx-padding: 50");
+            nameSearchContainer.setAlignment(Pos.CENTER);
+
+            Scene nameSearch = new Scene(textContainer, 400, 350);
+            nameSearchStage.setScene(nameSearch);
+            nameSearchStage.setTitle("Search By Name");
+            nameSearchStage.show();
+
+            searchButton.setOnAction(event2 -> {
+                String searchTerm = searchField.getText();
+
+                for(int i=0; i<names.size(); i++) {
+                    if(Objects.equals(types.get(i), searchTerm))
+                    {
+                        ImageView imageView = new ImageView(images.get(i));
+                        imageView.setFitWidth(80); // Set the width of the ImageView
+                        imageView.setFitHeight(80); // Set the height of the ImageView
+
+                        Label labelT1 = new Label(types.get(i));
+                        labelT1.setStyle("-fx-background-color: rgba(255, 255, 255, 0.5); -fx-padding: 5px; -fx-background-radius: 30; -fx-text-fill: white; -fx-font-weight: bold;");
+                        labelT1.setMaxWidth(60);
+                        labelT1.setAlignment(Pos.CENTER);
+
+                        Label labelT2 = new Label(types2.get(i));
+                        if(types2.get(i) != null)
+                            labelT2.setStyle("-fx-background-color: rgba(255, 255, 255, 0.5); -fx-padding: 5px; -fx-background-radius: 30; -fx-text-fill: white; -fx-font-weight: bold;");
+                        labelT2.setMaxWidth(60);
+                        labelT2.setAlignment(Pos.CENTER);
+
+                        Label nameLabel = new Label(names.get(i));
+                        nameLabel.setStyle("-fx-background-color: rgba(255, 255, 255, 0.0); -fx-padding: 5px; -fx-background-radius: 30; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13pt;");
+                        nameLabel.setAlignment(Pos.CENTER);
+
+                        Label idLabel = new Label("#" + id.get(i));
+                        idLabel.setStyle("-fx-background-color: rgba(255, 255, 255, 0.0); -fx-padding: 5px; -fx-background-radius: 30; -fx-text-fill: #303236; -fx-font-weight: bold; -fx-font-size: 11pt;");
+                        idLabel.setAlignment(Pos.CENTER);
+
+                        StackPane stackPane = new StackPane();
+                        stackPane.getChildren().addAll(imageView, labelT1, labelT2, nameLabel, idLabel);
+                        StackPane.setAlignment(imageView, Pos.BOTTOM_RIGHT);
+                        StackPane.setAlignment(labelT1, Pos.CENTER_LEFT);
+                        StackPane.setAlignment(labelT2, Pos.BOTTOM_LEFT);
+                        StackPane.setAlignment(nameLabel, Pos.TOP_LEFT);
+                        StackPane.setAlignment(idLabel, Pos.TOP_RIGHT);
+
+                        Button button = new Button();
+                        button.setPrefHeight(130);
+                        button.setPrefWidth(200);
+                        button.setGraphic(stackPane);
+                        button.setStyle("-fx-padding: 50");
+
+                        int finalI = i;
+                        button.setOnAction(event3 -> {
+                            String pokemonType = types.get(finalI);
+                            String pokemonName = names.get(finalI);
+                            String pokemonId = id.get(finalI);
+                            String pokemonDesc = desc.get(finalI);
+                            Image pokemonImage = images.get(finalI);
+                            String pokemonHeight = heights.get(finalI);
+                            String pokemonWeight = weights.get(finalI);
+                            Integer pokemonFavs = favourites.get(finalI);
+
+                            // Generate the details scene for the selected Pokémon
+                            Scene detailsScene = createDetailsScene(pokemonName, pokemonType, pokemonId, pokemonDesc, pokemonImage, pokemonHeight, pokemonWeight, pokemonFavs);
+
+                            secondaryStage.setScene(detailsScene);
+                            secondaryStage.setTitle("Details");
+                            secondaryStage.show();
+
+                        });
+
+                        if(Objects.equals(types.get(i), "Grass"))
+                            button.setStyle("-fx-background-color: #50d4b4; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Fire"))
+                            button.setStyle("-fx-background-color: #ff6c6c; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Water"))
+                            button.setStyle("-fx-background-color: #78bcfc; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Ground"))
+                            button.setStyle("-fx-background-color: #e0bc74; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Normal"))
+                            button.setStyle("-fx-background-color: #b0a47c; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Fighting"))
+                            button.setStyle("-fx-background-color: #b83c34; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Flying"))
+                            button.setStyle("-fx-background-color: #a894cc; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Poison"))
+                            button.setStyle("-fx-background-color: #984c94; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Electric"))
+                            button.setStyle("-fx-background-color: #f8d454; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Psychic"))
+                            button.setStyle("-fx-background-color: #e8648c; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Rock"))
+                            button.setStyle("-fx-background-color: #b8a44c; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Ice"))
+                            button.setStyle("-fx-background-color: #a8d4dc; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Bug"))
+                            button.setStyle("-fx-background-color: #b0b444; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Dragon"))
+                            button.setStyle("-fx-background-color: #544ca0; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Ghost"))
+                            button.setStyle("-fx-background-color: #705c94; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Dark"))
+                            button.setStyle("-fx-background-color: #705c4c; -fx-background-radius: 15;");
+                        if(Objects.equals(types.get(i), "Steel"))
+                            button.setStyle("-fx-background-color: #c0bccc; -fx-background-radius: 15;");
+
+                        if (count % 5 == 0 || images.indexOf(image) == images.size() - 1) {
+                            root.getChildren().add(currentRow);
+                            currentRow = new HBox(10);
+                        }
+
+                        nameSearchContainer.getChildren().addAll(textContainer, button);
+
+
+
+                        Scene nameSearched = new Scene(nameSearchContainer, 400, 350);
+                        nameSearchStage.setScene(nameSearched);
+                        nameSearchStage.setTitle("Search By Name");
+                        nameSearchStage.show();
+
                     }
                 }
             });
