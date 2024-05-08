@@ -9,11 +9,9 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -22,9 +20,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Stack;
 
-public class ImageButtonsFromDatabase extends Application {
+public class PokeDex extends Application {
 
     Stage secondaryStage = new Stage();
     Stage nameSearchStage = new Stage();
@@ -131,8 +128,40 @@ public class ImageButtonsFromDatabase extends Application {
         //buttonsContainer.setAlignment(Pos.CENTER);
 
         Button searchName = new Button("Search by Name");
+        searchName.setStyle("-fx-background-color: #ff3c04; -fx-text-fill: white; -fx-background-radius: 20");
+        searchName.setOnMouseEntered(e -> {
+            searchName.setScaleX(1.1); // Increase scale on X-axis
+            searchName.setScaleY(1.1); // Increase scale on Y-axis
+        });
+
+        searchName.setOnMouseExited(e -> {
+            searchName.setScaleX(1.0); // Reset scale on X-axis
+            searchName.setScaleY(1.0); // Reset scale on Y-axis
+        });
+
         Button searchType = new Button("Search by Type");
+        searchType.setStyle("-fx-background-color: #37474f; -fx-text-fill: white; -fx-background-radius: 20");
+        searchType.setOnMouseEntered(e -> {
+            searchType.setScaleX(1.1); // Increase scale on X-axis
+            searchType.setScaleY(1.1); // Increase scale on Y-axis
+        });
+
+        searchType.setOnMouseExited(e -> {
+            searchType.setScaleX(1.0); // Reset scale on X-axis
+            searchType.setScaleY(1.0); // Reset scale on Y-axis
+        });
+
         Button favButton = new Button("Show Favourites");
+        favButton.setStyle("-fx-background-color: #ffffff; -fx-background-radius: 20");
+        favButton.setOnMouseEntered(e -> {
+            favButton.setScaleX(1.1); // Increase scale on X-axis
+            favButton.setScaleY(1.1); // Increase scale on Y-axis
+        });
+
+        favButton.setOnMouseExited(e -> {
+            favButton.setScaleX(1.0); // Reset scale on X-axis
+            favButton.setScaleY(1.0); // Reset scale on Y-axis
+        });
 
         ImageView ballImage = new ImageView("file:///C:/CSE/2-2/CSE%204402/PokeDex/src/main/resources/com/example/pokedex/Images/Pokeball.png");
         ballImage.setFitHeight(100);
@@ -464,7 +493,7 @@ public class ImageButtonsFromDatabase extends Application {
                 for(int i=0; i<types.size(); i++) {
                     if(Objects.equals(favourites.get(i), 1))
                     {
-                        System.out.println(names.get(i));
+                        //System.out.println(names.get(i));
                         ImageView imageView = new ImageView(images.get(i));
                         imageView.setFitWidth(80); // Set the width of the ImageView
                         imageView.setFitHeight(80); // Set the height of the ImageView
